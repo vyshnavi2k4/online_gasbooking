@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Search Distributor</title>
+
+<style>
+  :root{
+    --bg:#f4f7fb;
+    --card:#fff;
+    --accent:#ff9900;
+    --blue:#003366;
+    --muted:#556;
+    --border:#e8f0f6;
+  }
+
+  *{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--blue);
+    padding:36px;
+    display:flex;
+    justify-content:center;
+  }
+
+  .container{
+    width:750px;
+    background:var(--card);
+    padding:36px;
+    border-radius:18px;
+    box-shadow:0 12px 36px rgba(0,0,0,0.08);
+  }
+
+  h1{
+    text-align:center;
+    margin:0 0 18px;
+    font-size:30px;
+    font-weight:800;
+    color:var(--blue);
+  }
+
+  .controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:20px;
+    align-items:flex-end;
+  }
+
+  .field{ flex:1; min-width:200px; }
+
+  label{ display:block; font-weight:700; margin-bottom:6px; }
+
+  input[type="text"]{
+    width:100%; height:44px;
+    padding:10px 14px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    font-size:15px;
+  }
+  input[type="text"]:focus{
+    border-color:#3b82f6;
+    box-shadow:0 8px 20px rgba(59,130,246,0.06);
+  }
+
+  .btn{
+    height:44px; padding:0 22px;
+    background:var(--accent); color:#fff;
+    border:none; border-radius:10px;
+    font-size:15px; font-weight:800;
+    cursor:pointer;
+  }
+
+  .btn.secondary{
+    background:#eef6ff;
+    color:var(--blue);
+    border:1px solid #d7e9ff;
+  }
+
+  .results{
+    margin-top:18px;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:18px;
+  }
+
+  .dist{
+    background:#fff;
+    border-radius:12px;
+    padding:16px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.06);
+    border:1px solid #f0f4f7;
+    min-height:125px;
+  }
+
+  .dist h3{ margin:0; font-size:17px; }
+  .dist p{ margin:8px 0 0; font-size:14px; color:var(--muted); }
+
+  .actions{
+    margin-top:12px;
+    display:flex;
+    gap:10px;
+  }
+
+  .action-btn{
+    padding:8px 12px;
+    border-radius:8px;
+    border:none;
+    font-weight:700;
+    cursor:pointer;
+    font-size:13px;
+  }
+
+  .book{ background:#0b63ff; color:white; }
+  .callnow{ background:#0ac174; color:white; text-decoration:none; display:inline-block; }
+
+  .more{
+    background:#eef6ff;
+    color:var(--blue);
+    border:1px solid #d7e9ff;
+  }
+
+  .nores{
+    margin-top:20px;
+    background:#fff6f0;
+    padding:14px;
+    border-radius:10px;
+    text-align:center;
+    color:#b35020;
+    font-weight:700;
+    display:none;
+  }
+
+  .footer-row{
+    margin-top:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  .page-info{
+    color:var(--muted);
+    font-weight:700;
+  }
+
+  @media(max-width:800px){
+    .container{ width:95%; padding:20px; }
+    .results{ grid-template-columns:1fr; }
+    .btn{ width:100%; }
+    .controls{ flex-direction:column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>Find Nearest Distributor</h1>
+
+  <div class="controls">
+    <div class="field">
+      <label>PIN code</label>
+      <input id="pin" maxlength="6" placeholder="e.g. 524001">
+    </div>
+    <div class="field">
+      <label>City / Area</label>
+      <input id="area" placeholder="e.g. Nellore">
+    </div>
+    <button id="btnSearch" class="btn">Search</button>
+    <button id="btnReset" class="btn secondary">Reset</button>
+  </div>
+
+  <div id="results" class="results"></div>
+  <div id="nores" class="nores">No distributors found.</div>
+
+  <div class="footer-row">
+    <div id="pageInfo" class="page-info">Showing results</div>
+    <button id="showMore" class="btn more">Show more</button>
+  </div>
+
+</div>
+
+
+<script>
+(function(){
+
+  const PAGE_SIZE = 6;
+
+  // 🌍 Convert raw number → international format
+  function toIntl(num){
+    const digits = num.replace(/\D/g,"");
+    if(digits.length === 10) return "+91" + digits; // normal Indian number
+    if(digits.length === 11 && digits.startsWith("0")) return "+91" + digits.slice(1);
+    return "+" + digits; // fallback
+  }
+
+  // Same distributors list
+  const distributors = [
+    {id:1,name:"Nellore North Gas",area:"Nellore",phone:"8899001122",pin:"524001"},
+    {id:2,name:"Nellore LPG Center",area:"Nellore",phone:"8899001133",pin:"524002"},
+    {id:3,name:"Coastal Gas",area:"Nellore",phone:"8899001144",pin:"524003"},
+    {id:4,name:"Hyderabad Central Gas",area:"Hyderabad",phone:"9012340001",pin:"500081"},
+    {id:5,name:"Secunderabad Gas",area:"Hyderabad",phone:"9012340002",pin:"500003"},
+    {id:6,name:"Kukatpally Gas Service",area:"Hyderabad",phone:"9012340003",pin:"500072"},
+    {id:7,name:"Vijayawada Gas Agency",area:"Vijayawada",phone:"9000001111",pin:"520010"},
+    {id:8,name:"MG Road LPG",area:"Vijayawada",phone:"9000002222",pin:"520004"},
+    {id:9,name:"Guntur Gas",area:"Guntur",phone:"9000003333",pin:"522002"},
+    {id:10,name:"Rajahmundry Gas",area:"Rajahmundry",phone:"9000004444",pin:"533101"},
+    {id:11,name:"Vizag Gas Centre",area:"Visakhapatnam",phone:"9001112222",pin:"530017"},
+    {id:12,name:"Anakapalle Gas",area:"Visakhapatnam",phone:"9001113333",pin:"531001"},
+    {id:13,name:"Chennai South LPG",area:"Chennai",phone:"9880011111",pin:"600017"},
+    {id:14,name:"Egmore Gas",area:"Chennai",phone:"9880012222",pin:"600008"},
+    {id:15,name:"Tirupati Gas",area:"Tirupati",phone:"9002223333",pin:"517501"},
+    {id:16,name:"Kurnool Gas",area:"Kurnool",phone:"9002224444",pin:"518001"},
+    {id:17,name:"Anantapur Gas",area:"Anantapur",phone:"9002225555",pin:"515001"},
+    {id:18,name:"Bangalore Gas",area:"Bangalore",phone:"9900011111",pin:"560001"},
+    {id:19,name:"Mysore LPG",area:"Mysore",phone:"9900012222",pin:"570017"},
+    {id:20,name:"Coimbatore LPG",area:"Coimbatore",phone:"9900013333",pin:"641002"},
+    {id:21,name:"Madurai Gas",area:"Madurai",phone:"9900014444",pin:"625001"},
+    {id:22,name:"Trichy Gas",area:"Trichy",phone:"9900015555",pin:"620001"},
+    {id:23,name:"Erode LPG",area:"Erode",phone:"9900016666",pin:"638001"},
+    {id:24,name:"Salem Gas",area:"Salem",phone:"9900017777",pin:"636001"},
+    {id:25,name:"Bhimavaram LPG",area:"Vijayawada",phone:"9000005555",pin:"534201"},
+    {id:26,name:"Nandyal Gas",area:"Nandyal",phone:"9002226666",pin:"518501"},
+    {id:27,name:"Gajuwaka LPG",area:"Visakhapatnam",phone:"9001114444",pin:"530026"},
+    {id:28,name:"Kakinada Gas",area:"Kakinada",phone:"9001115555",pin:"533001"},
+    {id:29,name:"Bhubaneswar LPG",area:"Bhubaneswar",phone:"9070011111",pin:"751001"},
+    {id:30,name:"Cuttack Gas",area:"Cuttack",phone:"9070012222",pin:"753001"},
+  ];
+
+  let filtered = distributors.slice();
+  let currentPage = 0;
+
+  const pinEl = document.getElementById("pin");
+  const areaEl = document.getElementById("area");
+  const results = document.getElementById("results");
+  const nores = document.getElementById("nores");
+  const showMoreBtn = document.getElementById("showMore");
+  const pageInfo = document.getElementById("pageInfo");
+
+  pinEl.addEventListener("input", () => {
+    pinEl.value = pinEl.value.replace(/\D/g,'').slice(0,6);
+  });
+
+  function search(pin,area){
+    const p = pin.trim();
+    const a = area.trim().toLowerCase();
+    return distributors.filter(d=>{
+      return (!p || d.pin===p) && (!a || d.area.toLowerCase().includes(a));
+    });
+  }
+
+  function render(reset=true){
+    if(reset) currentPage=0;
+    results.innerHTML="";
+    const start=currentPage*PAGE_SIZE;
+    const pageItems=filtered.slice(start,start+PAGE_SIZE);
+
+    if(pageItems.length===0){
+      nores.style.display="block";
+      results.style.display="none";
+      showMoreBtn.style.display="none";
+      pageInfo.textContent="No results";
+      return;
+    }
+
+    nores.style.display="none";
+    results.style.display="grid";
+
+    pageItems.forEach(d=>{
+
+      const intlPhone = toIntl(d.phone);
+
+      const box=document.createElement("div");
+      box.className="dist";
+      box.innerHTML=`
+        <h3>${d.name}</h3>
+        <p>${d.area}</p>
+        <p>Phone: ${intlPhone} | PIN: ${d.pin}</p>
+        <div class="actions">
+          <button class="action-btn book" onclick="bookNow('${d.name}','${intlPhone}','${d.pin}')">Book Now</button>
+          <a class="action-btn callnow" href="tel:${intlPhone}">Call Now</a>
+        </div>
+      `;
+      results.appendChild(box);
+    });
+
+    const totalPages=Math.ceil(filtered.length/PAGE_SIZE);
+    if(currentPage+1<totalPages) showMoreBtn.style.display="inline-block";
+    else showMoreBtn.style.display="none";
+
+    pageInfo.textContent=`Showing ${start+1} - ${Math.min(filtered.length,start+PAGE_SIZE)} of ${filtered.length}`;
+  }
+
+  document.getElementById("btnSearch").addEventListener("click",()=>{
+    const pin=pinEl.value;
+    const area=areaEl.value;
+    if(pin && pin.length!==6){
+      alert("PIN must be 6 digits");
+      return;
+    }
+    filtered=search(pin,area);
+    render(true);
+  });
+
+  document.getElementById("btnReset").addEventListener("click",()=>{
+    pinEl.value="";
+    areaEl.value="";
+    filtered=distributors.slice();
+    render(true);
+  });
+
+  showMoreBtn.addEventListener("click",()=>{
+    currentPage++;
+    render(false);
+  });
+
+  // BOOK NOW → booking.html
+  window.bookNow=function(name,phone,pin){
+    const params=new URLSearchParams({
+      distributorName:name,
+      distributorPhone:phone,
+      distributorPin:pin
+    });
+    window.location.href="booking.html?"+params.toString();
+  };
+
+  render(true);
+
+})();
+</script>
+
+</body>
+</html>

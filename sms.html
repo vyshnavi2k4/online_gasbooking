@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>SMS Gas Booking</title>
+
+<style>
+  body {
+    background:#f4f7fb;
+    font-family:Arial;
+    padding:30px;
+    overflow-x:hidden;
+    animation: fadeBody 0.7s ease;
+  }
+
+  @keyframes fadeBody {
+    from { opacity:0; }
+    to { opacity:1; }
+  }
+
+  .container {
+    width:420px;
+    margin:auto;
+    background:white;
+    padding:34px 28px;
+    border-radius:16px;
+    box-shadow:0 10px 26px rgba(0,0,0,0.12);
+    animation: slideUp 0.7s ease;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(40px); opacity:0; }
+    to { transform: translateY(0); opacity:1; }
+  }
+
+  h2 {
+    text-align:center;
+    color:#003366;
+    font-size:24px;
+    font-weight:800;
+    margin-bottom:20px;
+    animation: fadeIn 0.8s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity:0; }
+    to { opacity:1; }
+  }
+
+  label {
+    font-weight:700;
+    margin-top:12px;
+    display:block;
+    font-size:15px;
+    animation: fadeIn 0.8s ease;
+  }
+
+  /* SAME BOX SIZE FOR ALL INPUTS & SELECT */
+input, select {
+    width: 100%;
+    height: 48px;                /* FIXED HEIGHT FOR ALL */
+    padding: 12px 14px;          /* SAME ALL SIDES */
+    margin-top: 6px;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    outline: none;
+    transition: 0.2s;
+    box-sizing: border-box;      /* ENSURES SAME SIZE */
+}
+
+
+  @keyframes inputSlide {
+    from { transform: translateX(-20px); opacity:0; }
+    to { transform: translateX(0); opacity:1; }
+  }
+
+  input:focus, select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0,123,255,0.3);
+    height: 48px;                /* PREVENT SIZE CHANGE */
+}
+
+  .btn {
+    margin-top:22px;
+    width:100%;
+    padding:14px;
+    background:#ff6600;
+    color:white;
+    font-weight:800;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    font-size:16px;
+    opacity:0.6;
+    transition:0.3s ease;
+    transform: scale(0.98);
+  }
+
+  .btn.enabled {
+    opacity:1;
+    transform: scale(1);
+  }
+
+  .btn.enabled:hover {
+    transform: scale(1.05);
+  }
+
+  .error {
+    color:#b00020;
+    font-size:13px;
+    margin-top:4px;
+    display:none;
+    animation: shake 0.2s ease;
+  }
+
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-3px); }
+    50% { transform: translateX(3px); }
+    75% { transform: translateX(-3px); }
+    100% { transform: translateX(0); }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>SMS Gas Booking</h2>
+
+<label>Registered Mobile Number *</label>
+<input id="mobile" type="text" placeholder="Enter your mobile number">
+<div id="mobileErr" class="error">Phone number must be exactly 10 digits.</div>
+
+<label>Your LPG/CNG Consumer Number *</label>
+<input id="consumer" type="text" placeholder="Enter consumer number">
+<div id="consumerErr" class="error">Consumer number must be exactly 10 digits.</div>
+
+<label>Select Gas Type *</label>
+<select id="gasType">
+    <option value="">-- Select Gas Type --</option>
+    <option value="LPG">LPG</option>
+    <option value="CNG">CNG</option>
+</select>
+<div id="gasErr" class="error">Please select a gas type.</div>
+
+<button id="sendBtn" class="btn" disabled>Send SMS Request</button>
+
+</div>
+
+<script>
+const mobile = document.getElementById("mobile");
+const consumer = document.getElementById("consumer");
+const gasType = document.getElementById("gasType");
+
+const mobileErr = document.getElementById("mobileErr");
+const consumerErr = document.getElementById("consumerErr");
+const gasErr = document.getElementById("gasErr");
+
+const sendBtn = document.getElementById("sendBtn");
+
+
+// PHONE VALIDATION — EXACTLY 10 DIGITS ONLY
+function validateMobile() {
+  mobile.value = mobile.value.replace(/\D/g, "").slice(0,10);
+  const valid = mobile.value.length === 10;
+  mobileErr.style.display = valid ? "none" : "block";
+  return valid;
+}
+
+// CONSUMER VALIDATION — EXACTLY 10 DIGITS ONLY
+function validateConsumer() {
+  consumer.value = consumer.value.replace(/\D/g, "").slice(0,10);
+  const valid = consumer.value.length === 10;
+  consumerErr.style.display = valid ? "none" : "block";
+  return valid;
+}
+
+function validateGas() {
+  const valid = gasType.value !== "";
+  gasErr.style.display = valid ? "none" : "block";
+  return valid;
+}
+
+function toggleButton() {
+  if (validateMobile() && validateConsumer() && validateGas()) {
+    sendBtn.disabled = false;
+    sendBtn.classList.add("enabled");
+  } else {
+    sendBtn.disabled = true;
+    sendBtn.classList.remove("enabled");
+  }
+}
+
+mobile.addEventListener("input", toggleButton);
+consumer.addEventListener("input", toggleButton);
+gasType.addEventListener("change", toggleButton);
+
+// POPUP SMS FORMAT
+sendBtn.addEventListener("click", () => {
+  const sms = `${gasType.value} BOOK ${consumer.value}`;
+
+  const popup =
+`SMS SENT SUCCESSFULLY ✔
+
+To: 7715012345
+Message: ${sms}
+
+Registered Mobile: ${mobile.value}
+Consumer Number: ${consumer.value}`;
+
+  alert(popup);
+});
+</script>
+
+</body>
+</html>

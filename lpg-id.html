@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Retrieve LPG ID</title>
+<style>
+  :root{
+    --bg:#f7fafc;
+    --card:#ffffff;
+    --accent:#ff6600;
+    --muted:#556;
+    --blue:#002a56;
+    --border:#e6edf3;
+    --error:#d11a2a;
+  }
+  body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--blue);
+  }
+  .wrap{
+    max-width:900px;
+    margin:28px auto;
+    padding:18px;
+  }
+  .card{
+    background:var(--card);
+    border-radius:12px;
+    padding:18px;
+    border:1px solid var(--border);
+    box-shadow:0 10px 30px rgba(0,0,0,0.06);
+  }
+  h1{
+    text-align:center;
+    margin-top:0;
+  }
+  .form-row{
+    margin-bottom:14px;
+  }
+  label{
+    display:block;
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  input[type="text"]{
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    font-size:14px;
+    box-sizing:border-box;
+  }
+  .hint{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:4px;
+  }
+  .error{
+    font-size:12px;
+    color:var(--error);
+    margin-top:4px;
+    display:none;
+  }
+  .btn-row{
+    margin-top:18px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .btn{
+    display:inline-block;
+    background:var(--accent);
+    color:#fff;
+    padding:10px 18px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:700;
+    border:none;
+    cursor:pointer;
+  }
+  .btn.secondary{
+    background:#ccc;
+    color:#222;
+  }
+  .link-row{
+    margin-top:18px;
+    text-align:right;
+  }
+  .link-row a{
+    color:var(--blue);
+    font-weight:600;
+    text-decoration:none;
+  }
+  .link-row a:hover{
+    text-decoration:underline;
+  }
+  .result-box{
+    margin-top:20px;
+    padding:14px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:#fdfdfd;
+    display:none;
+  }
+  .result-box h3{
+    margin-top:0;
+    margin-bottom:8px;
+  }
+  .result-error{
+    color:var(--error);
+    font-weight:600;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Retrieve LPG ID</h1>
+
+      <form id="retrieveForm" onsubmit="return validateForm();">
+        <div class="form-row">
+          <label for="consumerId">Consumer ID</label>
+          <input type="text" id="consumerId" name="consumerId" maxlength="10" placeholder="Enter 10-digit Consumer ID">
+          <div class="hint">Must be a 10-digit number.</div>
+          <div class="error" id="consumerError">Please enter a valid 10-digit Consumer ID.</div>
+        </div>
+
+        <div class="form-row">
+          <label for="mobile">Registered Mobile Number</label>
+          <input type="text" id="mobile" name="mobile" maxlength="10" placeholder="Enter 10-digit mobile number">
+          <div class="hint">Must be a 10-digit mobile number.</div>
+          <div class="error" id="mobileError">Please enter a valid 10-digit mobile number.</div>
+        </div>
+
+        <div class="btn-row">
+          <button type="submit" class="btn">Retrieve</button>
+          <button type="reset" class="btn secondary" onclick="clearErrors();clearResult();">Reset</button>
+        </div>
+      </form>
+
+      <!-- Result box -->
+      <div id="resultBox" class="result-box">
+        <h3>Result</h3>
+        <div id="resultContent"></div>
+      </div>
+
+      <div class="link-row">
+        <!-- Link to admin page -->
+<a href="http://localhost:3000/admin.html">Go to Admin Page</a>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function isTenDigitNumber(value){
+    return /^[0-9]{10}$/.test(value);
+  }
+
+  function validateForm(){
+    var consumerId = document.getElementById('consumerId').value.trim();
+    var mobile = document.getElementById('mobile').value.trim();
+
+    var consumerError = document.getElementById('consumerError');
+    var mobileError = document.getElementById('mobileError');
+
+    var valid = true;
+
+    consumerError.style.display = 'none';
+    mobileError.style.display = 'none';
+    clearResult();
+
+    if (!isTenDigitNumber(consumerId)){
+      consumerError.style.display = 'block';
+      valid = false;
+    }
+
+    if (!isTenDigitNumber(mobile)){
+      mobileError.style.display = 'block';
+      valid = false;
+    }
+
+    if (valid){
+      retrieveFromServer(consumerId, mobile);
+    }
+
+    return false; // prevent normal form submit
+  }
+
+  function retrieveFromServer(consumerId, mobile){
+    // POST to backend API
+fetch('http://localhost:3000/api/consumers/retrieve', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ consumerId: consumerId, mobile: mobile })
+    })
+    .then(res => res.json())
+    .then(data => {
+      var box = document.getElementById('resultBox');
+      var content = document.getElementById('resultContent');
+      box.style.display = 'block';
+
+      if (data.success){
+        content.innerHTML = `
+          <p><strong>LPG ID:</strong> ${data.consumer.lpg_id}</p>
+          <p><strong>Customer Name:</strong> ${data.consumer.customer_name}</p>
+          <p><strong>Distributor Name:</strong> ${data.consumer.distributor_name}</p>
+        `;
+      } else {
+        content.innerHTML = `<p class="result-error">${data.message || 'No record found for given details.'}</p>`;
+      }
+    })
+    .catch(err => {
+      var box = document.getElementById('resultBox');
+      var content = document.getElementById('resultContent');
+      box.style.display = 'block';
+      content.innerHTML = `<p class="result-error">Error connecting to server. Please try again.</p>`;
+      console.error(err);
+    });
+  }
+
+  function clearErrors(){
+    document.getElementById('consumerError').style.display = 'none';
+    document.getElementById('mobileError').style.display = 'none';
+  }
+
+  function clearResult(){
+    var box = document.getElementById('resultBox');
+    var content = document.getElementById('resultContent');
+    box.style.display = 'none';
+    content.innerHTML = '';
+  }
+</script>
+</body>
+</html>

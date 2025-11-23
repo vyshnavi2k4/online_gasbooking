@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Details</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            background-color: #f4f4f4; 
+            padding: 50px;
+        }
+        .container { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+            width: 80%; 
+            margin: auto; 
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+        }
+        th, td { 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            text-align: left; 
+        }
+        th { 
+            background-color: #007bff; 
+            color: white; 
+        }
+        .cash { 
+            color: red; 
+            font-weight: bold; 
+        }
+        .online { 
+            color: green; 
+            font-weight: bold; 
+        }
+        button { 
+            width: 50%; 
+            padding: 10px; 
+            margin: 10px; 
+            border-radius: 5px; 
+            font-size: 16px; 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>All Booking Details</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Gas Type</th>
+                    <th>Amount Paid</th>
+                    <th>Payment Method</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="bookingTable">
+                <!-- Booking details will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Retrieve booking details from localStorage (as an array)
+        let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+
+        // Select table body
+        let tableBody = document.getElementById("bookingTable");
+
+        // Populate table with all stored bookings
+        if (bookings.length > 0) {
+            bookings.forEach(booking => {
+                let row = document.createElement("tr");
+                
+                // Check payment method and highlight accordingly
+                let paymentType = "N/A";
+                if (booking.method) {
+                    if (booking.method.toLowerCase() === "cash on delivery") {
+                        paymentType = `<span class="cash">${booking.method} ❌</span>`;
+                    } else if (booking.method.toLowerCase() === "online payment") {
+                        paymentType = `<span class="online">${booking.method} ✅</span>`;
+                    } else {
+                        paymentType = booking.method; // Display normally if unknown type
+                    }
+                }
+
+                row.innerHTML = `
+                    <td>${booking.name || "N/A"}</td>
+                    <td>${booking.phone || "N/A"}</td>
+                    <td>${booking.address || "N/A"}</td>
+                    <td>${booking.gasType || "N/A"}</td>
+                    <td>${(booking.amount !== undefined) ? booking.amount : "N/A"}</td>
+                    <td>${paymentType}</td>
+                    <td><strong>${booking.status || "Confirmed ✅"}</strong></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        } else {
+            // If no bookings found, display message
+            tableBody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No bookings found.</td></tr>`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            background-color: #f4f4f4; 
+            padding: 50px;
+        }
+        .container { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+            width: 50%; 
+            margin: auto; 
+        }
+        select, button { 
+            width: 80%; 
+            padding: 10px; 
+            margin: 10px; 
+            border-radius: 5px; 
+            font-size: 16px; 
+        }
+        .btn-pay { 
+            background-color: #28a745; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+        }
+        .btn-home { 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Payment Page</h2>
+        <p>Total Amount: <span id="amount">₹1000</span></p>
+        <select id="payment_method">
+            <option value="Credit Card">Credit Card</option>
+            <option value="UPI">UPI</option>
+            <option value="Net Banking">Net Banking</option>
+            <option value="Cash on Delivery">Cash on Delivery</option>
+        </select>
+        <button class="btn-pay" onclick="processPayment()">Proceed to Pay</button>
+    </div>
+
+    <script>
+        // Retrieve bookings from localStorage
+        let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
+        let lastBookingIndex = bookings.length - 1;
+
+        function processPayment() {
+            const method = document.getElementById('payment_method').value;
+
+            if (lastBookingIndex < 0) {
+                alert("No booking found!");
+                return;
+            }
+
+            // Update last booking entry with payment details
+            bookings[lastBookingIndex].amount = "1000";  
+            bookings[lastBookingIndex].method = method;
+            bookings[lastBookingIndex].status = (method === "Cash on Delivery") ? "Pending ❌" : "Confirmed ✅";
+
+            // Save updated bookings to localStorage
+            localStorage.setItem('bookings', JSON.stringify(bookings));
+
+            // Store only the last booking details for confirmation page
+            localStorage.setItem('paymentDetails', JSON.stringify(bookings[lastBookingIndex]));
+
+            // Redirect to confirmation page
+            window.location.href = "confirmation.html";
+        }
+    </script>
+
+</body>
+</html>

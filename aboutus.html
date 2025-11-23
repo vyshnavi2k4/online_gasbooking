@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Admin — Gas Booking</title>
+<style>
+  :root{
+    --bg:#ffffff; --card-bg:#fafafa; --border:#e6e6e6; --shadow:0 6px 18px rgba(0,0,0,0.06);
+    --text:#102233;
+    --accent:#ff6600;
+    --error:#d11a2a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);text-align:center}
+  .top-bubbles{display:flex;justify-content:center;gap:12px;padding:18px;flex-wrap:wrap;}
+  .bubble{padding:10px 16px;border-radius:22px;color:#fff;font-weight:800}
+  .pink{background:rgb(232,60,60)} .green{background:rgb(70,220,70)} .blue{background:#2aa2da}
+  h3{margin:6px 12px 12px;font-size:20px;font-weight:700}
+
+  .services-wrapper{width:100%;max-width:1050px;margin:14px auto}
+  .top-row{display:flex;justify-content:center;gap:12px;flex-wrap:nowrap}
+  .bottom-row{display:flex;justify-content:center;gap:12px;margin-top:12px;flex-wrap:nowrap}
+
+  .service-card{
+    width:230px;height:230px;padding:12px;border-radius:12px;background:var(--card-bg);border:1px solid var(--border);
+    box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    text-decoration:none;color:inherit;transition:transform .14s ease;
+  }
+  .service-card:hover{transform:translateY(-6px)}
+  .service-card img{width:100px;height:104px;object-fit:contain;margin-top:6px;display:block}
+  .service-title{margin-top:12px;font-weight:700;font-size:15px;text-align:center;padding:0 6px}
+
+  @media (max-width:760px){
+    .top-row,.bottom-row{flex-wrap:wrap;gap:10px}
+    .service-card{width:180px;height:200px}
+    .service-card img{width:78px;height:82px}
+  }
+
+  /* hide images briefly until JS sets stable blob src */
+  .js-loading img{opacity:0.02}
+
+  /* ---------- Admin form styles ---------- */
+  .admin-wrap{
+    max-width:900px;
+    margin:28px auto 40px;
+    text-align:left;
+  }
+  .admin-card{
+    background:var(--card-bg);
+    border:1px solid var(--border);
+    box-shadow:var(--shadow);
+    border-radius:12px;
+    padding:18px;
+  }
+  .admin-card h2{
+    margin-top:0;
+    text-align:center;
+  }
+  .form-row{
+    margin-bottom:14px;
+  }
+  label{
+    display:block;
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  input[type="text"]{
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    font-size:14px;
+  }
+  .hint{
+    font-size:12px;
+    color:#666;
+    margin-top:4px;
+  }
+  .btn-row{
+    margin-top:16px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:flex-start;
+  }
+  .btn{
+    display:inline-block;
+    background:var(--accent);
+    color:#fff;
+    padding:10px 18px;
+    border-radius:10px;
+    border:none;
+    font-weight:700;
+    cursor:pointer;
+    text-decoration:none;
+  }
+  .btn.secondary{
+    background:#ccc;
+    color:#222;
+  }
+  .msg{
+    margin-top:12px;
+    font-size:14px;
+  }
+  .msg.success{color:green;}
+  .msg.error{color:var(--error);}
+  .back-link{
+    margin-top:16px;
+    text-align:right;
+  }
+  .back-link a{
+    color:#2aa2da;
+    text-decoration:none;
+    font-weight:600;
+  }
+  .back-link a:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+
+  <!-- TOP NAV / BUBBLES -->
+  <div class="top-bubbles">
+    <div class="bubble pink"><a href="booking.html" style="color:#fff;text-decoration:none">Book <br> your cylinder</a></div>
+    <div class="bubble green"><a href="register.html" style="color:#fff;text-decoration:none">Register <br>for new connection</a></div>
+    <div class="bubble blue"><a href="feedback.html" style="color:#fff;text-decoration:none">Give <br> feedback</a></div>
+  </div>
+
+  <h3>Admin Panel – Manage LPG Customers</h3>
+
+  <!-- YOUR OLD SERVICES SECTION (you can keep or remove this part) -->
+  <div id="servicesWrapper" class="services-wrapper js-loading">
+    <div class="top-row">
+      <a class="service-card" href="kyc.html">
+        <img id="img-kyc" data-path="kyc.png" alt="KYC">
+        <div class="service-title">Check if you Need KYC</div>
+      </a>
+
+      <a class="service-card" href="locate-distributor.html">
+        <img id="img-locate" data-path="locate-distributor.png" alt="Locate Distributor">
+        <div class="service-title">Locate Distributor</div>
+      </a>
+
+      <a class="service-card" href="where-to-buy-5kg.html">
+        <img id="img-5kg" data-path="5kgcylinder.png" alt="5kg Cylinder">
+        <div class="service-title">Where to buy 5kg LPG</div>
+      </a>
+
+      <a class="service-card" href="register.html">
+        <img id="img-new" data-path="newconnection.png" alt="New Connection">
+        <div class="service-title">Apply for New Connection Online</div>
+      </a>
+    </div>
+
+    <div class="bottom-row">
+      <a class="service-card" href="feedback.html">
+        <img id="img-feedback" data-path="givefeedback.png" alt="Feedback">
+        <div class="service-title">Give your feedback online</div>
+      </a>
+
+      <a class="service-card" href="find-lpg-id.html">
+        <img id="img-lpgid" data-path="lpgid.png" alt="LPG ID">
+        <div class="service-title">Find your 17-digit LPG ID</div>
+      </a>
+
+      <a class="service-card" href="other-services.html">
+        <img id="img-other" data-path="other-services.png" alt="Other Services">
+        <div class="service-title">Other Services</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ---------- ADMIN FORM SECTION (REAL BACKEND PART) ---------- -->
+  <div class="admin-wrap">
+    <div class="admin-card">
+      <h2>Add / Update LPG Customer</h2>
+
+      <form id="adminForm" onsubmit="return saveCustomer();">
+        <div class="form-row">
+          <label for="consumerId">Consumer ID</label>
+          <input type="text" id="consumerId" maxlength="10" placeholder="Enter 10-digit Consumer ID">
+          <div class="hint">Exactly 10 digits.</div>
+        </div>
+
+        <div class="form-row">
+          <label for="mobile">Mobile Number</label>
+          <input type="text" id="mobile" maxlength="10" placeholder="Enter 10-digit mobile number">
+          <div class="hint">Exactly 10 digits.</div>
+        </div>
+
+        <div class="form-row">
+          <label for="customerName">Customer Name</label>
+          <input type="text" id="customerName" placeholder="Enter customer name">
+        </div>
+
+        <div class="form-row">
+          <label for="distributorName">Distributor Name</label>
+          <input type="text" id="distributorName" placeholder="Enter distributor name">
+        </div>
+
+        <div class="form-row">
+          <label for="lpgId">17-digit LPG ID</label>
+          <input type="text" id="lpgId" maxlength="17" placeholder="Enter 17-digit LPG ID">
+          <div class="hint">Exactly 17 digits.</div>
+        </div>
+
+        <div class="btn-row">
+          <button type="submit" class="btn">Save</button>
+          <button type="reset" class="btn secondary" onclick="clearMessage();">Reset</button>
+        </div>
+      </form>
+
+      <div id="msg" class="msg"></div>
+
+      <div class="back-link">
+        <a href="lpg-id.html">Go to LPG ID Retrieve Page</a>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ---------- image loader (your original JS) ---------- */
+const IMAGES = [
+  {id: 'img-kyc'},
+  {id: 'img-locate'},
+  {id: 'img-5kg'},
+  {id: 'img-new'},
+  {id: 'img-feedback'},
+  {id: 'img-lpgid'},
+  {id: 'img-other'}
+];
+
+let createdBlobUrls = [];
+
+async function setImageBlob(imgEl, path) {
+  if (!imgEl || !path) return;
+  try {
+    const resp = await fetch(path, { cache: 'no-store', credentials: 'same-origin' });
+    if (!resp.ok) {
+      imgEl.src = path;
+      return;
+    }
+    const blob = await resp.blob();
+    if (imgEl._blobUrl) {
+      try { URL.revokeObjectURL(imgEl._blobUrl); } catch(e) {}
+      imgEl._blobUrl = null;
+    }
+    const blobUrl = URL.createObjectURL(blob);
+    imgEl._blobUrl = blobUrl;
+    createdBlobUrls.push(blobUrl);
+    imgEl.src = blobUrl;
+    imgEl.style.opacity = '1';
+  } catch (err) {
+    console.warn('Failed to fetch', path, err);
+    imgEl.src = path;
+  }
+}
+
+async function restoreAllImages() {
+  const wrapper = document.getElementById('servicesWrapper');
+  wrapper.classList.add('js-loading');
+  for (const it of IMAGES) {
+    const el = document.getElementById(it.id);
+    if (!el) continue;
+    const path = el.getAttribute('data-path');
+    await setImageBlob(el, path);
+  }
+  setTimeout(()=> wrapper.classList.remove('js-loading'), 60);
+}
+
+function revokeAllBlobUrls() {
+  createdBlobUrls.forEach(u => {
+    try { URL.revokeObjectURL(u); } catch(e) {}
+  });
+  createdBlobUrls = [];
+  IMAGES.forEach(it => {
+    const el = document.getElementById(it.id);
+    if (el && el._blobUrl) el._blobUrl = null;
+  });
+}
+
+window.addEventListener('load', function(){ restoreAllImages(); });
+window.addEventListener('pageshow', function(){ restoreAllImages(); });
+window.addEventListener('pagehide', function(){ revokeAllBlobUrls(); });
+
+/* ---------- ADMIN FORM JS (BACKEND CONNECTION) ---------- */
+
+function isTenDigitNumber(v){ return /^[0-9]{10}$/.test(v); }
+
+function saveCustomer(){
+  const consumerId = document.getElementById('consumerId').value.trim();
+  const mobile = document.getElementById('mobile').value.trim();
+  const customerName = document.getElementById('customerName').value.trim();
+  const distributorName = document.getElementById('distributorName').value.trim();
+  const lpgId = document.getElementById('lpgId').value.trim();
+  const msg = document.getElementById('msg');
+
+  clearMessage();
+
+  if (!isTenDigitNumber(consumerId)){
+    msg.textContent = 'Consumer ID must be exactly 10 digits.';
+    msg.className = 'msg error';
+    return false;
+  }
+  if (!isTenDigitNumber(mobile)){
+    msg.textContent = 'Mobile number must be exactly 10 digits.';
+    msg.className = 'msg error';
+    return false;
+  }
+  if (!customerName || !distributorName || !lpgId){
+    msg.textContent = 'Please fill all fields.';
+    msg.className = 'msg error';
+    return false;
+  }
+  if (lpgId.length !== 17){
+    msg.textContent = 'LPG ID must be exactly 17 digits.';
+    msg.className = 'msg error';
+    return false;
+  }
+
+  // 🔗 This is where it talks to Node.js + DB
+  fetch('/api/customers/create', {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify({ consumerId, mobile, customerName, distributorName, lpgId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success){
+      msg.textContent = data.message || 'Customer saved successfully.';
+      msg.className = 'msg success';
+    } else {
+      msg.textContent = data.message || 'Error saving customer.';
+      msg.className = 'msg error';
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    msg.textContent = 'Server error. Please try again.';
+    msg.className = 'msg error';
+  });
+
+  return false; // prevent normal page refresh
+}
+
+function clearMessage(){
+  const msg = document.getElementById('msg');
+  msg.textContent = '';
+  msg.className = 'msg';
+}
+</script>
+
+</body>
+</html>

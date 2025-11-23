@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Register - Gas Booking</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      background-color: #f4f7fb;
+      padding: 32px 12px;
+    }
+
+    /* Enlarged Box — matches Feedback page */
+    .container {
+      width: 420px;
+      background: #ffffff;
+      padding: 34px 28px;  /* increased padding */
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      text-align: left;
+      min-height: 600px;  /* enlarged vertical height */
+    }
+
+    .top {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .top a {
+      color: #003366;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #003366;
+      font-size: 22px;
+      margin-bottom: 20px;
+      font-weight: 800;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      border: 1px solid #e0e6ee;
+      border-radius: 10px;
+      padding: 10px;
+      background-color: #fbfdff;
+      margin-bottom: 18px; /* increased spacing */
+    }
+
+    .input-group img {
+      width: 20px;
+      margin-right: 10px;
+      opacity: 0.85;
+    }
+
+    input {
+      border: none;
+      outline: none;
+      width: 100%;
+      background: transparent;
+      font-size: 15px;
+      padding: 6px 0;
+    }
+
+    .optional { 
+      font-size: 12px; 
+      color: #888;
+      margin-left: 6px; 
+    }
+
+    .btn {
+      background: #ff6600;
+      color: white;
+      border: none;
+      padding: 14px;
+      width: 100%;
+      border-radius: 10px;
+      font-size: 17px;
+      cursor: pointer;
+      margin-top: 22px;
+      font-weight: 800;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .error {
+      color: #b00020;
+      font-size: 13px;
+      margin-top: -10px;
+      margin-bottom: 8px;
+      display: none;
+    }
+
+    .success {
+      color: #0a7a07;
+      font-size: 14px;
+      margin-top: 10px;
+      display: none;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        width: 92%;
+        padding: 26px;
+        min-height: 560px;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="top">
+    </div>
+
+    <h2>Register for New Connection</h2>
+
+    <form id="registerForm" novalidate>
+
+      <label>First Name *</label>
+      <div class="input-group">
+        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png">
+        <input id="firstName" type="text" placeholder="First Name">
+      </div>
+      <div id="firstNameErr" class="error">First name must start with a capital letter.</div>
+
+      <label>Last Name *</label>
+      <div class="input-group">
+        <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png">
+        <input id="lastName" type="text" placeholder="Last Name">
+      </div>
+      <div id="lastNameErr" class="error">Last name must start with a capital letter.</div>
+
+      <label>Mobile Number *</label>
+      <div class="input-group">
+        <img src="https://cdn-icons-png.flaticon.com/512/126/126509.png">
+        <input id="phoneNumber" type="tel" maxlength="10" placeholder="10-digit mobile number">
+      </div>
+      <div id="phoneErr" class="error">Phone number must be exactly 10 digits.</div>
+
+      <label>Email <span class="optional">(optional)</span></label>
+      <div class="input-group">
+        <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png">
+        <input id="email" type="email" placeholder="Email address">
+      </div>
+      <div id="emailErr" class="error">Enter a valid email address.</div>
+
+      <button class="btn" type="submit">Proceed</button>
+
+      <div id="formSuccess" class="success">Registration submitted successfully!</div>
+    </form>
+  </div>
+
+<script>
+(function(){
+  const form = document.getElementById('registerForm');
+
+  const nameRegex = /^[A-Z][a-zA-Z\s'-]*$/;
+  const phoneRegex = /^[0-9]{10}$/;
+
+  const first = document.getElementById('firstName');
+  const last = document.getElementById('lastName');
+  const phone = document.getElementById('phoneNumber');
+  const email = document.getElementById('email');
+
+  const errFirst = document.getElementById('firstNameErr');
+  const errLast = document.getElementById('lastNameErr');
+  const errPhone = document.getElementById('phoneErr');
+  const errEmail = document.getElementById('emailErr');
+  const successMsg = document.getElementById('formSuccess');
+
+  function validateFirst() {
+    if (!nameRegex.test(first.value.trim())) { errFirst.style.display = 'block'; return false; }
+    errFirst.style.display = 'none'; return true;
+  }
+
+  function validateLast() {
+    if (!nameRegex.test(last.value.trim())) { errLast.style.display = 'block'; return false; }
+    errLast.style.display = 'none'; return true;
+  }
+
+  function validatePhone() {
+    if (!phoneRegex.test(phone.value.trim())) { errPhone.style.display = 'block'; return false; }
+    errPhone.style.display = 'none'; return true;
+  }
+
+  function validateEmail() {
+    if (email.value.trim() && !/^\S+@\S+\.\S+$/.test(email.value.trim())) {
+      errEmail.style.display = 'block'; return false;
+    }
+    errEmail.style.display = 'none'; return true;
+  }
+
+  phone.addEventListener('input', function(){
+    this.value = this.value.replace(/\D/g,'').slice(0,10);
+  });
+
+  first.addEventListener('input', validateFirst);
+  last.addEventListener('input', validateLast);
+  phone.addEventListener('input', validatePhone);
+  email.addEventListener('input', validateEmail);
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const ok1 = validateFirst();
+    const ok2 = validateLast();
+    const ok3 = validatePhone();
+    const ok4 = validateEmail();
+
+    if (!ok1 || !ok2 || !ok3 || !ok4) return;
+
+    successMsg.style.display = 'block';
+    setTimeout(()=> successMsg.style.display = 'none', 3000);
+
+    form.reset();
+  });
+
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Give Feedback</title>
+
+<style>
+    body{
+        font-family: Arial, sans-serif;
+        background: #eef3f9;
+        margin:0;
+        padding:0;
+        display:flex;
+        justify-content:center;
+        align-items:flex-start;
+        min-height:100vh;
+        padding-top:20px;
+    }
+
+    /* Increased width & height */
+     .container {
+      width: 360px;
+      background: #ffffff;
+      padding: 34px 28px;  /* increased padding */
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      text-align: left;
+      min-height: 150px;  /* enlarged vertical height */
+    }
+    .top {
+      text-align: center;
+      margin-bottom: 10px;
+     }
+    .top a{
+        text-decoration:none;
+        color:#003366;
+        font-weight:700;
+        font-size:13px;
+    }
+
+    h2{
+        text-align:center;
+        font-size:19px;
+        color:#003366;
+        font-weight:800;
+        margin-bottom:8px;
+    }
+    .subtitle{
+        text-align:center;
+        color:#6d7680;
+        margin-bottom:14px;
+        font-size:13px;
+    }
+
+    label{
+        display:block;
+        font-weight:700;
+        margin-top:12px;
+        margin-bottom:6px;
+        font-size:14px;
+    }
+
+    .input-group{
+        display:flex;
+        align-items:center;
+        border:1px solid #e0e6ee;
+        border-radius:10px;
+        padding:8px;
+        background-color:#fbfdff;
+    }
+
+    .input-group img{
+        width:18px;
+        margin-right:8px;
+        opacity:0.85;
+    }
+
+    .input{
+        border:none;
+        outline:none;
+        width:100%;
+        background:transparent;
+        font-size:14px;
+        padding:4px 0;
+    }
+
+    textarea.input{
+        height:90px;
+        resize:vertical;
+        padding-top:6px;
+    }
+
+    .optional{
+        font-size:12px;
+        color:#888;
+        margin-left:4px;
+    }
+
+    .btn{
+        background:#ff6600;
+        color:white;
+        border:none;
+        padding:12px;
+        width:100%;
+        border-radius:10px;
+        font-size:16px;
+        font-weight:800;
+        cursor:pointer;
+        margin-top:18px;
+    }
+
+    .btn:hover{
+        opacity:0.9;
+    }
+
+    .error{
+        color:#b00020;
+        font-size:11px;
+        margin-top:4px;
+        display:none;
+    }
+
+    .success{
+        color:#0a7a07;
+        font-size:12px;
+        margin-top:10px;
+        display:none;
+        text-align:center;
+        font-weight:700;
+    }
+
+    @media(max-width:480px){
+        .container{
+            width:88%;
+            padding:18px;
+            min-height:400px;
+        }
+    }
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <div class="top">
+    </div>
+
+    <h2>Give Feedback</h2>
+    <p class="subtitle">Your feedback helps us improve.</p>
+
+    <form id="fbForm" novalidate>
+
+        <!-- Name -->
+        <label>Your Name *</label>
+        <div class="input-group">
+            <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png">
+            <input id="name" class="input" type="text" placeholder="Full Name">
+        </div>
+        <div id="nameErr" class="error">Enter a valid name.</div>
+
+        <!-- Phone -->
+        <label>Mobile Number *</label>
+        <div class="input-group">
+            <img src="https://cdn-icons-png.flaticon.com/512/126/126509.png">
+            <input id="phone" class="input" type="tel" maxlength="10" placeholder="10-digit mobile number">
+        </div>
+        <div id="phoneErr" class="error">Enter a valid 10-digit number.</div>
+
+        <!-- Email -->
+        <label>Email <span class="optional">(optional)</span></label>
+        <div class="input-group">
+            <img src="https://cdn-icons-png.flaticon.com/512/561/561127.png">
+            <input id="email" class="input" type="email" placeholder="Email address">
+        </div>
+        <div id="emailErr" class="error">Invalid email.</div>
+
+        <!-- Feedback -->
+        <label>Feedback *</label>
+        <div class="input-group" style="align-items:flex-start;">
+            <img src="https://cdn-icons-png.flaticon.com/512/3193/3193015.png" style="margin-top:5px;">
+            <textarea id="message" class="input" placeholder="Write your feedback..."></textarea>
+        </div>
+        <div id="msgErr" class="error">Minimum 5 characters.</div>
+
+        <button type="submit" class="btn">Submit</button>
+
+        <div id="successMsg" class="success">Feedback submitted!</div>
+
+    </form>
+
+</div>
+
+<script>
+(function(){
+    const nameEl = document.getElementById('name');
+    const phoneEl = document.getElementById('phone');
+    const emailEl = document.getElementById('email');
+    const msgEl = document.getElementById('message');
+
+    const nameErr = document.getElementById('nameErr');
+    const phoneErr = document.getElementById('phoneErr');
+    const emailErr = document.getElementById('emailErr');
+    const msgErr = document.getElementById('msgErr');
+    const success = document.getElementById('successMsg');
+
+    const nameRegex = /^[A-Z][a-zA-Z\s'-]*$/;
+    const phoneRegex = /^[0-9]{10}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function validateName(){
+        if(!nameRegex.test(nameEl.value.trim())){
+            nameErr.style.display='block'; return false;
+        }
+        nameErr.style.display='none'; return true;
+    }
+
+    function validatePhone(){
+        if(!phoneRegex.test(phoneEl.value.trim())){
+            phoneErr.style.display='block'; return false;
+        }
+        phoneErr.style.display='none'; return true;
+    }
+
+    function validateEmail(){
+        const v = emailEl.value.trim();
+        if(v && !emailRegex.test(v)){
+            emailErr.style.display='block'; return false;
+        }
+        emailErr.style.display='none'; return true;
+    }
+
+    function validateMsg(){
+        if(msgEl.value.trim().length < 5){
+            msgErr.style.display='block'; return false;
+        }
+        msgErr.style.display='none'; return true;
+    }
+
+    phoneEl.addEventListener('input',()=> phoneEl.value = phoneEl.value.replace(/\D/g,'').slice(0,10));
+    nameEl.addEventListener('input', validateName);
+    phoneEl.addEventListener('input', validatePhone);
+    emailEl.addEventListener('input', validateEmail);
+    msgEl.addEventListener('input', validateMsg);
+
+    document.getElementById('fbForm').addEventListener('submit', function(e){
+        e.preventDefault();
+        if(!(validateName() & validatePhone() & validateEmail() & validateMsg())) return;
+
+        success.style.display='block';
+        setTimeout(()=> success.style.display='none', 2500);
+
+        this.reset();
+    });
+
+})();
+</script>
+
+</body>
+</html>

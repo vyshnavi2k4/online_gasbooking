@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sign In - Gas Booking</title>
+<style>
+  :root{
+    --blue:#0b4f8a;
+    --accent:#ff6600;
+    --muted:#6d7885;
+    --bg:#f4f7fb;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Inter, system-ui, Arial;
+    background:var(--bg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding:20px;
+  }
+
+  .card{
+    width:400px;
+    max-width:94%;
+    background:#fff;
+    border-radius:12px;
+    padding:26px;
+    box-shadow:0 10px 30px rgba(20,30,60,0.07);
+  }
+
+  .logo {
+    width:76px; height:76px;
+    margin:0 auto 12px;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 6px 18px rgba(0,0,0,0.06);
+    background:#f8fbff;
+  }
+  .logo img{width:100%; height:100%; object-fit:cover; display:block;}
+
+  h1{font-size:20px; text-align:center; color:var(--blue); margin:8px 0 16px;}
+  p.lead{font-size:13px; text-align:center; color:var(--muted); margin:0 0 18px;}
+
+  label{display:block; font-size:13px; font-weight:700; color:#223; margin:8px 0 6px;}
+  .input-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    border:1px solid #e6edf5;
+    background:#fbfdff;
+    padding:10px;
+    border-radius:10px;
+    margin-bottom:6px;
+  }
+  .input-row img{width:18px; opacity:0.9}
+  input[type="text"], input[type="password"], input[type="tel"], input[type="email"]{
+    border:0; outline:none; width:100%; font-size:15px; background:transparent;
+  }
+
+  .hint{font-size:12px; color:var(--muted); margin:6px 0 8px;}
+  .error{color:#b00020; font-size:13px; margin:6px 0 8px; display:none}
+  .success{color:#0a7a07; font-size:14px; margin:10px 0 0; display:none; text-align:center; font-weight:700}
+
+  .btn{
+    width:100%; margin-top:14px; background:var(--accent); color:#fff; border:0;
+    padding:12px; border-radius:10px; font-weight:800; font-size:15px; cursor:pointer;
+  }
+
+  .row-between{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:12px}
+  .small-link{font-size:13px; color:var(--blue); text-decoration:none; font-weight:700}
+  .small-muted{font-size:13px; color:var(--muted)}
+
+  /* Modal */
+  .modal-backdrop{position:fixed; inset:0; background:rgba(8,10,20,0.45); display:none; align-items:center; justify-content:center; z-index:50;}
+  .modal{width:360px; max-width:94%; background:#fff; border-radius:10px; padding:18px; box-shadow:0 8px 30px rgba(10,20,40,0.3)}
+  .modal h3{margin:0 0 12px; color:var(--blue)}
+  .modal .row{margin-top:8px}
+  .modal .actions{display:flex; gap:10px; margin-top:14px}
+  .btn-ghost{flex:1;padding:10px;border-radius:8px;border:1px solid #e6edf5;background:#fff; cursor:pointer}
+  .btn-primary{flex:1;padding:10px;border-radius:8px;background:var(--accent); color:#fff; border:0; cursor:pointer}
+
+  @media (max-width:420px){ .card{padding:18px} }
+</style>
+</head>
+<body>
+
+<div class="card" role="main" aria-labelledby="signinTitle">
+  <div class="logo" aria-hidden="true">
+    <img src=https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnXp9xGYPdeF-Go1SRE801x1JcI1Q_Vam9GQ&s>
+  </div>
+
+  <h1 id="signinTitle">Sign in to Gas Booking</h1>
+  <p class="lead">Enter your email or 10-digit mobile and password to continue.</p>
+
+  <form id="signinForm" novalidate>
+    <!-- identifier -->
+    <label for="identifier">Email or Mobile *</label>
+    <div class="input-row" role="group" aria-labelledby="identifier">
+      <input id="identifier" name="identifier" type="text" inputmode="email" autocomplete="username"
+             aria-describedby="idHelp">
+    </div>
+    <div id="idErr" class="error" role="alert">Please enter a valid email or 10-digit mobile number.</div>
+
+    <!-- password -->
+    <label for="password">Password *</label>
+    <div class="input-row">
+      <input id="password" name="password" type="password" autocomplete="current-password">
+    </div>
+    <div id="pwErr" class="error" role="alert">Password must be at least 6 characters.</div>
+
+    <button type="submit" class="btn" aria-live="polite">Sign In</button>
+
+    <div class="row-between" style="margin-top:10px;">
+      <div class="small-muted">New here?</div>
+      <a class="small-link" href="register.html" id="createAccount">Create new account</a>
+    </div>
+
+    <div class="row-between" style="margin-top:8px;">
+      <div></div>
+      <a class="small-link" href="#" id="forgotLink">Forgot password?</a>
+    </div>
+
+    <div id="formSuccess" class="success">Signed in successfully — redirecting...</div>
+  </form>
+</div>
+
+<!-- Forgot Password Modal -->
+<div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal" role="document" aria-labelledby="modalTitle">
+    <h3 id="modalTitle">Reset Password</h3>
+    <p class="small-muted">Enter your registered email or mobile to receive reset instructions.</p>
+
+    <div class="row">
+      <label for="resetIdent" style="font-size:13px;font-weight:700;margin-bottom:6px;">Email or Mobile</label>
+      <div class="input-row">
+        <input id="resetIdent" type="text" >
+      </div>
+      <div id="resetErr" class="error">Enter valid email or 10-digit mobile number.</div>
+      <div id="resetSuccess" class="success" style="display:none">OTP sent to your email/mobile.</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-ghost" id="modalCancel">Cancel</button>
+      <button class="btn-primary" id="modalSend">Send OTP</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Elements
+  const form = document.getElementById('signinForm');
+  const idField = document.getElementById('identifier');
+  const pwField = document.getElementById('password');
+
+  const idErr = document.getElementById('idErr');
+  const pwErr = document.getElementById('pwErr');
+  const success = document.getElementById('formSuccess');
+
+  const forgotLink = document.getElementById('forgotLink');
+  const modal = document.getElementById('modal');
+  const modalCancel = document.getElementById('modalCancel');
+  const modalSend = document.getElementById('modalSend');
+  const resetIdent = document.getElementById('resetIdent');
+  const resetErr = document.getElementById('resetErr');
+  const resetSuccess = document.getElementById('resetSuccess');
+
+  // regex
+  const emailRe = /^\S+@\S+\.\S+$/;
+  const phoneRe = /^[0-9]{10}$/;
+
+  // Helpers
+  function isEmail(v){ return emailRe.test(v); }
+  function isPhone(v){ return phoneRe.test(v); }
+  function isEmailOrPhone(v){ return isEmail(v) || isPhone(v); }
+
+  // Live cleanup: remove spaces
+  idField.addEventListener('input', ()=> { idField.value = idField.value.replace(/\s/g,''); idErr.style.display='none'; });
+  resetIdent.addEventListener('input', ()=> { resetIdent.value = resetIdent.value.replace(/\s/g,''); resetErr.style.display='none'; resetSuccess.style.display='none'; });
+  pwField.addEventListener('input', ()=> { if (pwField.value.length>=6) pwErr.style.display='none'; });
+
+  // Validate functions
+  function validateId(){
+    const v = idField.value.trim();
+    if (!v) { idErr.textContent='Email or mobile is required.'; idErr.style.display='block'; return false; }
+    if (!isEmailOrPhone(v)) { idErr.textContent='Enter a valid email or 10-digit mobile number.'; idErr.style.display='block'; return false; }
+    idErr.style.display='none'; return true;
+  }
+  function validatePw(){
+    if (!pwField.value || pwField.value.length < 6) { pwErr.style.display='block'; return false; }
+    pwErr.style.display='none'; return true;
+  }
+
+  // Submit
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const okId = validateId();
+    const okPw = validatePw();
+    if (!okId || !okPw) return;
+
+    // simulate auth success
+    success.style.display = 'block';
+    setTimeout(()=> window.location.href = 'index.html', 900);
+  });
+
+  idField.addEventListener('blur', validateId);
+  pwField.addEventListener('blur', validatePw);
+
+  // Forgot password modal controls
+  forgotLink.addEventListener('click', function(e){
+    e.preventDefault();
+    modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden','false');
+    resetIdent.value = idField.value || '';
+    resetErr.style.display='none';
+    resetSuccess.style.display='none';
+    resetIdent.focus();
+  });
+
+  modalCancel.addEventListener('click', function(){
+    closeModal();
+  });
+
+  function closeModal(){
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden','true');
+  }
+
+  modalSend.addEventListener('click', function(){
+    const v = resetIdent.value.trim();
+    if (!v) { resetErr.textContent = 'Email or mobile is required.'; resetErr.style.display='block'; return; }
+    if (!isEmailOrPhone(v)) { resetErr.textContent = 'Enter a valid email or 10-digit mobile number.'; resetErr.style.display='block'; return; }
+
+    // simulate sending OTP / reset link
+    resetErr.style.display='none';
+    resetSuccess.style.display='block';
+    // in real app make an API call here
+    setTimeout(()=> {
+      resetSuccess.textContent = isPhone(v) ? 'OTP sent to your mobile.' : 'Password reset link sent to your email.';
+      // keep modal open for user to see message, then auto close after 2s
+      setTimeout(closeModal, 1400);
+    }, 700);
+  });
+
+  // keyboard: close modal on ESC
+  window.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && modal.style.display === 'flex') closeModal();
+  });
+
+})();
+</script>
+
+</body>
+</html>

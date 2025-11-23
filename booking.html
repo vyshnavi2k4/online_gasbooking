@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> booking cylinder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+            scroll-behavior: smooth;
+        }
+        .speech-bubbles {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .bubble {
+            padding: 10px 15px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            position: relative;
+            display: inline-block;
+            text-align: center;
+            cursor: pointer;
+        }
+        .bubble::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 10px;
+            border-style: solid;
+            border-color: transparent transparent white transparent;
+        }
+        .pink { background-color: #e91e63; }
+        .green { background-color: #4caf50; }
+        .blue { background-color: #03a9f4; }
+ .content-box {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: inline-block;
+            text-align: center;
+            width: 80%;
+            background-color: #f9f9f9;
+        }
+        .icons {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .icon {
+            text-align: center;
+        }
+        .icon img {
+            width: 60px;
+            height: 60px;
+        }
+        a {
+            text-decoration: none;
+            color: black;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+  <center><h1>Booking Your Gas cylinder</h1></center>
+
+    <!-- Book Your Cylinder Section -->
+    <div class="content-box" id="book-cylinder">
+        <h2>Book Your Cylinder</h2>
+        <p>Place your LPG cylinder order easily through various modes.</p>
+        <div class="icons">
+            <div class="icon">
+                <img src="online.png" alt="Online"><br><br>
+               <a href="online.html">Online</a>
+            </div>
+            <div class="icon">
+                <img src="sms.png" alt="SMS"><br><br>
+                 <a href="sms.html">SMS</a>
+            </div>
+            <div class="icon">
+                <img src="ivrs.png" alt="IVRS"><br><br>
+                 <a href="ivrs.html">IVRS</a>
+            </div>
+            <div class="icon">
+                <img src="mobile.png" alt="Mobile Apps"><br><br>
+                <a href="mobile.html"> Mobile Apps</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

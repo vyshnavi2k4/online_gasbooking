@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gas Booking System</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h2, h3 {
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        input, select {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-primary {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #218838;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+        .btn-back {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-back:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Gas Booking System</h2>
+        <div class="form-group">
+            <input type="text" id="name" placeholder="Enter Name" required>
+            <input type="text" id="phone" placeholder="Enter Phone Number" required maxlength="10">
+            <input type="text" id="address" placeholder="Enter Address" required>
+            <select id="gas_type">
+            <option value="LPG">LPG</option>
+            <option value="CNG">CNG</option>
+            </select>
+            <button class="btn btn-primary" onclick="addBooking()">Book Gas</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h3>Bookings</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Gas Type</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="bookingList"></tbody>
+        </table>
+    </div>
+
+    <script>
+        let bookings = [];
+
+        function addBooking() {
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const gasType = document.getElementById('gas_type').value;
+
+            if (name === "" || phone === "" || address === "") {
+                alert("Please fill all fields.");
+                return;
+            }
+
+            const booking = { name, phone, address, gasType, status: 'Pending' };
+            bookings.push(booking);
+            console.log("New Booking Added:", booking);
+
+            updateTable();
+            document.getElementById("bookingForm").reset();
+        }
+
+        function updateTable() {
+            const tableBody = document.getElementById('bookingList');
+            tableBody.innerHTML = '';
+
+            bookings.forEach((booking, index) => {
+                const row = `
+                    <tr>
+                        <td>${booking.name}</td>
+                        <td>${booking.phone}</td>
+                        <td>${booking.address}</td>
+                        <td>${booking.gasType}</td>
+                        <td>${booking.status}</td>
+                        <td>
+                            <button class="btn btn-primary" onclick="confirmBooking(${index})">Confirm</button>
+                            <button class="btn btn-danger" onclick="deleteBooking(${index})">Delete</button>
+                        </td>
+                        
+                    </tr>
+                `;
+                tableBody.insertAdjacentHTML("beforeend", row);
+            });
+        }
+
+        function confirmBooking(index) {
+            bookings[index].status = 'Confirmed';
+            localStorage.setItem('bookings', JSON.stringify(bookings));
+            window.location.href = "payment.html";
+        }
+
+        function deleteBooking(index) {
+            bookings.splice(index, 1);
+            localStorage.setItem('bookings', JSON.stringify(bookings));
+            updateTable();
+        }
+
+        updateTable();
+    </script>
+</body>
+</html>

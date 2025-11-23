@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin – Add LPG Consumer</title>
+<style>
+  :root{
+    --bg:#f7fafc;
+    --card:#ffffff;
+    --accent:#ff6600;
+    --muted:#556;
+    --blue:#002a56;
+    --border:#e6edf3;
+    --error:#d11a2a;
+  }
+  body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--blue);
+  }
+  .wrap{
+    max-width:900px;
+    margin:28px auto;
+    padding:18px;
+  }
+  .card{
+    background:var(--card);
+    border-radius:12px;
+    padding:18px;
+    border:1px solid var(--border);
+    box-shadow:0 10px 30px rgba(0,0,0,0.06);
+  }
+  h1{
+    text-align:center;
+    margin-top:0;
+  }
+  .form-row{
+    margin-bottom:14px;
+  }
+  label{
+    display:block;
+    font-weight:600;
+    margin-bottom:6px;
+  }
+  input[type="text"]{
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    font-size:14px;
+    box-sizing:border-box;
+  }
+  .hint{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:4px;
+  }
+  .btn-row{
+    margin-top:18px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .btn{
+    display:inline-block;
+    background:var(--accent);
+    color:#fff;
+    padding:10px 18px;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:700;
+    border:none;
+    cursor:pointer;
+  }
+  .btn.secondary{
+    background:#ccc;
+    color:#222;
+  }
+  .msg{
+    margin-top:16px;
+    font-size:14px;
+  }
+  .msg.success{
+    color:green;
+  }
+  .msg.error{
+    color:var(--error);
+  }
+  .link-row{
+    margin-top:18px;
+    text-align:right;
+  }
+  .link-row a{
+    color:var(--blue);
+    font-weight:600;
+    text-decoration:none;
+  }
+  .link-row a:hover{
+    text-decoration:underline;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Admin – Add LPG Consumer</h1>
+
+      <form id="adminForm" onsubmit="return saveConsumer();">
+        <div class="form-row">
+          <label for="consumerId">Consumer ID</label>
+          <input type="text" id="consumerId" maxlength="10" placeholder="Enter 10-digit Consumer ID">
+          <div class="hint">Exactly 10 digits.</div>
+        </div>
+
+        <div class="form-row">
+          <label for="mobile">Mobile Number</label>
+          <input type="text" id="mobile" maxlength="10" placeholder="Enter 10-digit mobile number">
+          <div class="hint">Exactly 10 digits.</div>
+        </div>
+
+        <div class="form-row">
+          <label for="customerName">Customer Name</label>
+          <input type="text" id="customerName" placeholder="Enter customer name">
+        </div>
+
+        <div class="form-row">
+          <label for="distributorName">Distributor Name</label>
+          <input type="text" id="distributorName" placeholder="Enter distributor name">
+        </div>
+
+        <div class="form-row">
+          <label for="lpgId">17-digit LPG ID</label>
+          <input type="text" id="lpgId" maxlength="17" placeholder="Enter 17-digit LPG ID">
+          <div class="hint">Exactly 17 digits.</div>
+        </div>
+
+        <div class="btn-row">
+          <button type="submit" class="btn">Save</button>
+          <button type="reset" class="btn secondary" onclick="clearMessage();">Reset</button>
+        </div>
+      </form>
+
+      <div id="msg" class="msg"></div>
+
+      <div class="link-row">
+<a href="http://localhost:3000/lpg-id.html">Back to Retrieve LPG ID</a>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function isTenDigitNumber(value){
+    return /^[0-9]{10}$/.test(value);
+  }
+
+  function saveConsumer(){
+    clearMessage();
+    const consumerId = document.getElementById('consumerId').value.trim();
+    const mobile = document.getElementById('mobile').value.trim();
+    const customerName = document.getElementById('customerName').value.trim();
+    const distributorName = document.getElementById('distributorName').value.trim();
+    const lpgId = document.getElementById('lpgId').value.trim();
+
+    const msg = document.getElementById('msg');
+
+    if (!isTenDigitNumber(consumerId)){
+      msg.textContent = 'Consumer ID must be a 10-digit number.';
+      msg.className = 'msg error';
+      return false;
+    }
+    if (!isTenDigitNumber(mobile)){
+      msg.textContent = 'Mobile number must be a 10-digit number.';
+      msg.className = 'msg error';
+      return false;
+    }
+    if (!customerName || !distributorName || !lpgId){
+      msg.textContent = 'Please fill all fields.';
+      msg.className = 'msg error';
+      return false;
+    }
+    if (lpgId.length !== 17 || !/^[0-9]+$/.test(lpgId)){
+      msg.textContent = 'LPG ID must be a 17-digit number.';
+      msg.className = 'msg error';
+      return false;
+    }
+
+    fetch('/api/consumers/create', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        consumerId,
+        mobile,
+        customerName,
+        distributorName,
+        lpgId
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success){
+        msg.textContent = data.message || 'Consumer saved successfully.';
+        msg.className = 'msg success';
+        document.getElementById('adminForm').reset();
+      } else {
+        msg.textContent = data.message || 'Error saving consumer.';
+        msg.className = 'msg error';
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      msg.textContent = 'Server error. Please try again.';
+      msg.className = 'msg error';
+    });
+
+    return false; // prevent normal form submit / page reload
+  }
+
+  function clearMessage(){
+    const msg = document.getElementById('msg');
+    msg.textContent = '';
+    msg.className = 'msg';
+  }
+</script>
+</body>
+</html>
